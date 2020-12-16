@@ -1,0 +1,17 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: liefproject/doc:latest
+    steps:
+      - checkout
+      - run: |
+          python3 -m pip install --no-cache-dir --index-url https://lief-project.github.io/packages lief
+
+
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
