@@ -1,0 +1,75 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: liefproject/doc:latest
+    environment:
+      LIEF_VERSION: 0.11.0
+      LIEF_INPUT: "/root/project/LIEF-0.11.0-Linux/include/LIEF"
+      LIEF_EXCLUDE: "/root/project/LIEF-0.11.0-Linux/include/LIEF/third-party"
+      LIEF_DOXYGEN_XML: "/root/project/doxygen/xml"
+    working_directory: /root/project
+    steps:
+      - run: mkdir -p workspace
+      - run:
+          name: Install LIEF Python bindings
+          command: |
+            python3 -m pip install --no-cache-dir --index-url https://lief-project.github.io/packages lief
+      - run:
+          name: Get LIEF SDK
+          command: |
+            curl https://lief-project.github.io/packages/sdk/LIEF-${LIEF_VERSION}-Linux.tar.gz -LOJ
+            tar -xvf LIEF-${LIEF_VERSION}-Linux.tar.gz
+      - run:
+          name: Get LIEF Sources
+          command: |
+            curl -LO https://github.com/lief-project/LIEF/archive/master.tar.gz
+            tar -xvf master.tar.gz
+      - run:
+          name: Generate doxygen documentation
+          command: |
+            curl -LO https://gist.githubusercontent.com/romainthomas/1ffc98fa20216a09b28baa305af048a4/raw/55b80ef5dfa1ea9a637d2cf48500019d755737ee/Doxyfile
+            doxygen Doxyfile
+      - run:
+          name: Generate Sphinx assets
+          command: |
+            cp LIEF-master/examples/cmake/find_package/CMakeLists.txt     LIEF-master/doc/sphinx/_static/CMakeFindPackage.cmake
+            cp LIEF-master/examples/cmake/find_package/README.rst         LIEF-master/doc/sphinx/_static/ReadmeFindPackage.rst
+            cp LIEF-master/examples/cmake/external_project/CMakeLists.txt LIEF-master/doc/sphinx/_static/CMakeExternalProject.cmake
+            cp LIEF-master/examples/cmake/external_project/README.rst     LIEF-master/doc/sphinx/_static/ReadmeExternalProject.rst
+      - run:
+          name: Generate Sphinx documentation
+          command: |
+            cd LIEF-master/doc
+            curl -LO https://gist.githubusercontent.com/romainthomas/8a503a1f3c13862e1339a8f61e679fbf/raw/1c9a292b68018bfff19725359997e510c576e817/conf.py
+            mv conf.py sphinx/
+            sphinx-build -a -E -j8 ./sphinx ./sphinx-doc
+      - run:
+          name: Copy doc tree
+          command: |
+            cp -r ${CIRCLE_WORKING_DIRECTORY}/LIEF-master/doc/sphinx-doc ${CIRCLE_WORKING_DIRECTORY}/workspace/doc
+            cp -r ${CIRCLE_WORKING_DIRECTORY}/doxygen/html ${CIRCLE_WORKING_DIRECTORY}/workspace/doc/doxygen
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - .
+  deploy:
+    docker:
+      - image: liefproject/doc-deploy:latest
+    working_directory: /root/project
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          command: |
+            python3 .github/main.py
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
