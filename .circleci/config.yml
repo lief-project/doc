@@ -7,6 +7,7 @@ jobs:
       LIEF_VERSION: 0.11.0
       LIEF_INPUT: "/root/project/LIEF-0.11.0-Linux/include/LIEF"
       LIEF_EXCLUDE: "/root/project/LIEF-0.11.0-Linux/include/LIEF/third-party"
+      LIEF_INCLUDE_PATH: "/root/project/LIEF-0.11.0-Linux/include"
       LIEF_DOXYGEN_XML: "/root/project/doxygen/xml"
     working_directory: /root/project
     steps:

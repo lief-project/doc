@@ -30,6 +30,7 @@ curl -LO https://gist.githubusercontent.com/romainthomas/1ffc98fa20216a09b28baa3
 
 LIEF_INPUT=LIEF-${LIEF_VERSION}-Linux/include/LIEF \
 LIEF_EXCLUDE=LIEF-${LIEF_VERSION}-Linux/include/LIEF/third-party \
+LIEF_INCLUDE_PATH=${LIEF_VERSION}-Linux/include \
 doxygen Doxyfile
 
 # Sphinx
