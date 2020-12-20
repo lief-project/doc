@@ -30,7 +30,7 @@ curl -LO https://gist.githubusercontent.com/romainthomas/1ffc98fa20216a09b28baa3
 
 LIEF_INPUT=LIEF-${LIEF_VERSION}-Linux/include/LIEF \
 LIEF_EXCLUDE=LIEF-${LIEF_VERSION}-Linux/include/LIEF/third-party \
-LIEF_INCLUDE_PATH=${LIEF_VERSION}-Linux/include \
+LIEF_INCLUDE_PATH=LIEF-${LIEF_VERSION}-Linux/include \
 doxygen Doxyfile
 
 # Sphinx
@@ -38,11 +38,11 @@ doxygen Doxyfile
 
 cd LIEF-master/doc
 # TODO(romain): To update when it will be merged in master
-curl -LO https://gist.githubusercontent.com/romainthomas/8a503a1f3c13862e1339a8f61e679fbf/raw/1c9a292b68018bfff19725359997e510c576e817/conf.py
+curl -LO https://gist.githubusercontent.com/romainthomas/8a503a1f3c13862e1339a8f61e679fbf/raw/3fda36bdcb00b8c28ff70f8386ea07cdb2bb75dc/conf.py
 mv conf.py sphinx/
 
 LIEF_DOXYGEN_XML=$HOME/doxygen/xml/ \
-sphinx-build -a -E -j8 ./sphinx ./sphinx-doc
+sphinx-build -a -E -j8 -w sphinx-warn.log ./sphinx ./sphinx-doc
 
 # Deploy
 # =======================================================================

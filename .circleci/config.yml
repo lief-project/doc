@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: liefproject/doc:latest
+      - image: liefproject/doc:sphinx_lief_theme
     environment:
       LIEF_VERSION: 0.11.0
       LIEF_INPUT: "/root/project/LIEF-0.11.0-Linux/include/LIEF"
@@ -42,7 +42,7 @@ jobs:
           name: Generate Sphinx documentation
           command: |
             cd LIEF-master/doc
-            curl -LO https://gist.githubusercontent.com/romainthomas/8a503a1f3c13862e1339a8f61e679fbf/raw/1c9a292b68018bfff19725359997e510c576e817/conf.py
+            curl -LO https://gist.githubusercontent.com/romainthomas/8a503a1f3c13862e1339a8f61e679fbf/raw/3fda36bdcb00b8c28ff70f8386ea07cdb2bb75dc/conf.py
             mv conf.py sphinx/
             sphinx-build -a -E -j8 ./sphinx ./sphinx-doc
       - run:
