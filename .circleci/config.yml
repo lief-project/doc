@@ -29,21 +29,11 @@ jobs:
       - run:
           name: Generate doxygen documentation
           command: |
-            curl -LO https://gist.githubusercontent.com/romainthomas/1ffc98fa20216a09b28baa305af048a4/raw/55b80ef5dfa1ea9a637d2cf48500019d755737ee/Doxyfile
-            doxygen Doxyfile
-      - run:
-          name: Generate Sphinx assets
-          command: |
-            cp LIEF-master/examples/cmake/find_package/CMakeLists.txt     LIEF-master/doc/sphinx/_static/CMakeFindPackage.cmake
-            cp LIEF-master/examples/cmake/find_package/README.rst         LIEF-master/doc/sphinx/_static/ReadmeFindPackage.rst
-            cp LIEF-master/examples/cmake/external_project/CMakeLists.txt LIEF-master/doc/sphinx/_static/CMakeExternalProject.cmake
-            cp LIEF-master/examples/cmake/external_project/README.rst     LIEF-master/doc/sphinx/_static/ReadmeExternalProject.rst
+            doxygen LIEF-master/doc/doxygen/Doxyfile
       - run:
           name: Generate Sphinx documentation
           command: |
             cd LIEF-master/doc
-            curl -LO https://gist.githubusercontent.com/romainthomas/8a503a1f3c13862e1339a8f61e679fbf/raw/3fda36bdcb00b8c28ff70f8386ea07cdb2bb75dc/conf.py
-            mv conf.py sphinx/
             sphinx-build -a -E -j8 ./sphinx ./sphinx-doc
       - run:
           name: Copy doc tree
