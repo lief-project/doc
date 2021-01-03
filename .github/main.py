@@ -151,8 +151,10 @@ def setup_ssh():
     cmd = f"{OPENSSL} aes-256-cbc -K {DEPLOY_KEY} -iv {DEPLOY_IV} -in {deploy_key_path} -out {output_key_path.as_posix()} -d"
 
     kwargs = {
-        'shell':      True,
-        'cwd':        REPODIR,
+        'shell':  True,
+        'cwd':    REPODIR,
+        'stdout': subprocess.DEVNULL,
+        'stderr': subprocess.DEVNULL,
     }
 
     p = subprocess.Popen(cmd, **kwargs)

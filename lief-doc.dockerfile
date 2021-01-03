@@ -18,7 +18,7 @@
 
 # This stage is used to build the latest version of Doxygen.
 # One can use --build-arg doxygen_version=<branch | tag> to build a specific tag or branch
-FROM debian:buster-slim AS doxygen-builder
+FROM debian:buster-slim AS base
 
 LABEL maintainer="Romain Thomas <me@romainthomas.fr>"
 ARG doxygen_version=Release_1_8_20
