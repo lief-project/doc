@@ -47,11 +47,11 @@ jobs:
             - .
       - store_artifacts:
           path: /tmp/sphinx-warn.log
-          destination: documentation-warnings
+          destination: sphinx-warnings
 
       - store_artifacts:
           path: /tmp/doxygen-warn.log
-          destination: documentation-warnings
+          destination: doxygen-warnings
   deploy:
     docker:
       - image: liefproject/doc-deploy:latest
