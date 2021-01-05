@@ -9,6 +9,7 @@ jobs:
       LIEF_EXCLUDE: "/root/project/LIEF-0.11.0-Linux-x86_64/include/LIEF/third-party"
       LIEF_INCLUDE_PATH: "/root/project/LIEF-0.11.0-Linux-x86_64/include"
       LIEF_DOXYGEN_XML: "/root/project/doxygen/xml"
+      LIEF_DOXYGEN_WARN_FILE: "/tmp/doxygen-warn.log"
     working_directory: /root/project
     steps:
       - run: mkdir -p workspace
@@ -34,7 +35,7 @@ jobs:
           name: Generate Sphinx documentation
           command: |
             cd LIEF-master/doc
-            sphinx-build -a -E -j8 ./sphinx ./sphinx-doc
+            sphinx-build -a -E -j8 -w /tmp/sphinx-warn.log ./sphinx ./sphinx-doc
       - run:
           name: Copy doc tree
           command: |
@@ -44,6 +45,13 @@ jobs:
           root: workspace
           paths:
             - .
+      - store_artifacts:
+          path: /tmp/sphinx-warn.log
+          destination: documentation-warnings
+
+      - store_artifacts:
+          path: /tmp/doxygen-warn.log
+          destination: documentation-warnings
   deploy:
     docker:
       - image: liefproject/doc-deploy:latest
