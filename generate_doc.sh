@@ -7,6 +7,7 @@ set -ex
 # Install latest LIEF Python version
 cd $HOME
 python3 -m pip install --no-cache-dir --index-url https://lief-project.github.io/packages lief==${LIEF_VERSION}.dev0
+#python3 -m pip install --no-cache-dir https://github.com/lief-project/packages/blob/0.11.0/lief/lief-0.11.0-cp37-cp37m-manylinux1_x86_64.whl?raw=true
 
 # Install SDK
 curl https://lief-project.github.io/packages/sdk/LIEF-${LIEF_VERSION}-Linux.tar.gz -LOJ

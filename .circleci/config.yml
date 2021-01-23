@@ -4,10 +4,10 @@ jobs:
     docker:
       - image: liefproject/doc:sphinx_lief_theme
     environment:
-      LIEF_VERSION: 0.11.0
-      LIEF_INPUT: "/root/project/LIEF-0.11.0-Linux-x86_64/include/LIEF"
-      LIEF_EXCLUDE: "/root/project/LIEF-0.11.0-Linux-x86_64/include/LIEF/third-party"
-      LIEF_INCLUDE_PATH: "/root/project/LIEF-0.11.0-Linux-x86_64/include"
+      LIEF_VERSION: 0.12.0
+      LIEF_INPUT: "/root/project/LIEF-0.12.0-Linux-x86_64/include/LIEF"
+      LIEF_EXCLUDE: "/root/project/LIEF-0.12.0-Linux-x86_64/include/LIEF/third-party"
+      LIEF_INCLUDE_PATH: "/root/project/LIEF-0.12.0-Linux-x86_64/include"
       LIEF_DOXYGEN_XML: "/root/project/doxygen/xml"
       LIEF_DOXYGEN_WARN_FILE: "/tmp/doxygen-warn.log"
     working_directory: /root/project

@@ -1,6 +1,6 @@
 # Docker file used to build LIEF documentation
 # docker build --target base -t liefproject/doc:base -f ./lief-doc.dockerfile .
-# docker build --target sphinx_lief_theme -t liefproject/doc:sphinx_lief_theme -f ./lief-doc.dockerfile .
+# docker build --target sphinx_lief_theme --tag liefproject/doc:sphinx_lief_theme -f ./lief-doc.dockerfile .
 #
 # mkdir -p build && cp generate_doc.sh build/ && chmod 777 build/generate_doc.sh
 #
@@ -18,10 +18,10 @@
 
 # This stage is used to build the latest version of Doxygen.
 # One can use --build-arg doxygen_version=<branch | tag> to build a specific tag or branch
-FROM debian:buster-slim AS base
+FROM debian:buster-slim AS doxygen-builder
 
 LABEL maintainer="Romain Thomas <me@romainthomas.fr>"
-ARG doxygen_version=Release_1_8_20
+ARG doxygen_version=Release_1_9_1
 
 RUN mkdir -p /usr/share/man/man1 && \
     apt-get update -y && \
@@ -65,10 +65,10 @@ RUN mkdir -p /usr/share/man/man1 && \
 RUN python3 -m pip \
   --no-cache-dir \
   install \
-    sphinx==3.3.1       \
-    breathe==4.25.1     \
-    Pygments==2.7.3     \
-    sphinx_rtd_theme==0.5.0
+    sphinx==3.4.3       \
+    breathe==4.26.0     \
+    Pygments==2.7.4     \
+    sphinx_rtd_theme==0.5.1
 
 # configure locale
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
