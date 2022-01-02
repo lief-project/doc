@@ -5,13 +5,14 @@ set -ex
 # =======================================================================
 
 # Install latest LIEF Python version
+
 cd $HOME
 python3 -m pip install --no-cache-dir --index-url https://lief-project.github.io/packages lief==${LIEF_VERSION}.dev0
-#python3 -m pip install --no-cache-dir https://github.com/lief-project/packages/blob/0.11.0/lief/lief-0.11.0-cp37-cp37m-manylinux1_x86_64.whl?raw=true
+#python3 -m pip install --no-cache-dir https://github.com/lief-project/packages/blob/0.11.1/lief/lief-0.11.0-cp37-cp37m-manylinux1_x86_64.whl?raw=true
 
 # Install SDK
-curl https://lief-project.github.io/packages/sdk/LIEF-${LIEF_VERSION}-Linux.tar.gz -LOJ
-tar -xvf LIEF-${LIEF_VERSION}-Linux.tar.gz
+curl https://lief-project.github.io/packages/sdk/LIEF-${LIEF_VERSION}-Linux-x86_64.tar.gz -LOJ
+tar -xvf LIEF-${LIEF_VERSION}-Linux-x86_64.tar.gz
 
 # Download LIEF src
 curl -LO https://github.com/lief-project/LIEF/archive/master.tar.gz
@@ -20,9 +21,14 @@ tar -xvf master.tar.gz
 # Doxygen
 # =======================================================================
 
-LIEF_INPUT=LIEF-${LIEF_VERSION}-Linux/include/LIEF \
-LIEF_EXCLUDE=LIEF-${LIEF_VERSION}-Linux/include/LIEF/third-party \
-LIEF_INCLUDE_PATH=LIEF-${LIEF_VERSION}-Linux/include \
+#LIEF_INPUT=LIEF-${LIEF_VERSION}-Linux/include/LIEF \
+#LIEF_EXCLUDE=LIEF-${LIEF_VERSION}-Linux/include/LIEF/third-party \
+#LIEF_INCLUDE_PATH=LIEF-${LIEF_VERSION}-Linux/include \
+#doxygen LIEF-master/doc/doxygen/Doxyfile
+
+LIEF_INPUT=LIEF-master/include/LIEF \
+LIEF_EXCLUDE=LIEF-master/include/LIEF/third-party \
+LIEF_INCLUDE_PATH=LIEF-master/include \
 doxygen LIEF-master/doc/doxygen/Doxyfile
 
 # Sphinx
