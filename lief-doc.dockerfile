@@ -44,6 +44,7 @@ RUN mkdir -p /usr/share/man/man1 && \
       cmake \
       flex \
       bison \
+      graphviz \
       ninja-build \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -75,9 +76,9 @@ RUN mkdir -p /usr/share/man/man1 && \
 RUN python3 -m pip \
   --no-cache-dir \
   install \
-    sphinx==4.3.2       \
-    breathe==4.31.0     \
-    Pygments==2.11.1     \
+    sphinx==4.4.0       \
+    breathe==4.33.1     \
+    Pygments==2.11.2     \
     sphinx_rtd_theme==1.0.0
 
 
