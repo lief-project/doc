@@ -16,7 +16,9 @@ jobs:
       - run:
           name: Install LIEF Python bindings
           command: |
+            python3 --version
             python3 -m pip install --no-cache-dir --index-url https://lief-project.github.io/packages lief
+            python3 -c "import lief;print(lief.__version__)"
       - run:
           name: Get LIEF SDK
           command: |
