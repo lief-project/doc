@@ -4,7 +4,7 @@
 # 1. Building the Docker image
 #
 #    docker build --target base -t liefproject/doc:base -f ./lief-doc.dockerfile .
-#    docker build --target sphinx_lief_theme --tag liefproject/doc:sphinx_lief_theme -f ./lief-doc.dockerfile .
+#    docker build --target sphinx_lief_theme --tag liefproject/doc:sphinx_lief_theme_3 -f ./lief-doc.dockerfile .
 #
 # mkdir -p build && cp generate_doc.sh build/ && chmod 777 build/generate_doc.sh
 #
@@ -44,7 +44,6 @@ RUN mkdir -p /usr/share/man/man1 && \
       cmake \
       flex \
       bison \
-      graphviz \
       ninja-build \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -69,15 +68,18 @@ RUN mkdir -p /usr/share/man/man1 && \
       ca-certificates \
       curl \
       locales \
+      graphviz \
       python3 python3-pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip \
   --no-cache-dir \
   install \
-    sphinx==4.4.0       \
-    breathe==4.33.1     \
+    requests==2.27.1     \
+    sphinx==4.4.0        \
+    breathe==4.33.1      \
     Pygments==2.11.2     \
     sphinx_rtd_theme==1.0.0
 

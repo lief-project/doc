@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: liefproject/doc:sphinx_lief_theme_2
+      - image: liefproject/doc:sphinx_lief_theme_3
     environment:
       LIEF_VERSION: 0.13.0
       LIEF_INPUT: "/root/project/LIEF-0.13.0-Linux-x86_64/include/LIEF /root/project/LIEF-master/doc/doxygen"
@@ -14,16 +14,12 @@ jobs:
     steps:
       - run: mkdir -p workspace
       - run:
-          name: Install LIEF Python bindings
+          name: Boostrap LIEF SDK & Wheel
           command: |
+            curl -LO https://raw.githubusercontent.com/lief-project/doc/main/.circleci/bootstrap_env.py
             python3 --version
-            python3 -m pip install --no-cache-dir --index-url https://lief-project.github.io/packages lief
+            python3 ./bootstrap_env.py
             python3 -c "import lief;print(lief.__version__)"
-      - run:
-          name: Get LIEF SDK
-          command: |
-            curl https://lief-project.github.io/packages/sdk/LIEF-${LIEF_VERSION}-Linux-x86_64.tar.gz -LOJ
-            tar -xvf LIEF-${LIEF_VERSION}-Linux-x86_64.tar.gz
       - run:
           name: Get LIEF Sources
           command: |
