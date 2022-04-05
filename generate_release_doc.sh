@@ -6,10 +6,10 @@ set -ex
 
 # Install latest LIEF Python version
 cd $HOME
-python3 -m pip install --no-cache-dir --index-url https://lief.s3-website.fr-par.scw.cloud/latest lief==${LIEF_VERSION}.dev0
+python3 -m pip install --no-cache-dir --index-url https://lief.s3-website.fr-par.scw.cloud/${LIEF_VERSION} lief==${LIEF_VERSION}
 
 # Install SDK
-curl https://lief.s3-website.fr-par.scw.cloud/latest/sdk/LIEF-${LIEF_VERSION}-Linux-x86_64.tar.gz -LOJ
+curl https://lief.s3-website.fr-par.scw.cloud/${LIEF_VERSION}/sdk/LIEF-${LIEF_VERSION}-Linux-x86_64.tar.gz -LOJ
 tar -xvf LIEF-${LIEF_VERSION}-Linux-x86_64.tar.gz
 
 # Download LIEF src
@@ -39,6 +39,7 @@ mv $HOME/doxygen/html /src/doc/doxygen
 
 mv /tmp/sphinx-warn.log /src/
 mv /tmp/doxygen-warn.log /src/
+
 
 chmod -R 777 /src/ && \
   chown 1000:1000 /src/doc && \
