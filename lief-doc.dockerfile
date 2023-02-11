@@ -4,7 +4,7 @@
 # 1. Building the Docker image
 #
 #    docker build --target base -t liefproject/doc:base -f ./lief-doc.dockerfile .
-#    docker build --target sphinx_lief_theme --tag liefproject/doc:sphinx_lief_theme_3 -f ./lief-doc.dockerfile .
+#    docker build --target sphinx_lief_theme --tag liefproject/doc:sphinx_lief_theme_4 -f ./lief-doc.dockerfile .
 #
 # mkdir -p build && cp generate_doc.sh build/ && chmod 777 build/generate_doc.sh
 #
@@ -24,14 +24,12 @@
 #
 # ================================================
 
-
-
 # This stage is used to build the latest version of Doxygen.
 # One can use --build-arg doxygen_version=<branch | tag> to build a specific tag or branch
 FROM debian:bullseye-slim AS doxygen-builder
 
 LABEL maintainer="Romain Thomas <me@romainthomas.fr>"
-ARG doxygen_version=Release_1_9_3
+ARG doxygen_version=Release_1_9_6
 
 RUN mkdir -p /usr/share/man/man1 && \
     apt-get update -y && \
@@ -69,6 +67,7 @@ RUN mkdir -p /usr/share/man/man1 && \
       curl \
       locales \
       graphviz \
+      git \
       python3 python3-pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -77,11 +76,13 @@ RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip \
   --no-cache-dir \
   install \
-    requests==2.27.1     \
-    sphinx==4.4.0        \
-    breathe==4.33.1      \
-    Pygments==2.11.2     \
-    sphinx_rtd_theme==1.0.0
+    requests==2.28.2     \
+    sphinx==6.1.3        \
+    Pygments==2.14.0     \
+    sphinx_rtd_theme==1.2.0 \
+    git+https://github.com/breathe-doc/breathe.git@b4564e9b7f654cc23907f4e346ed79f1447a9cba
+    # Install not yet released version of breath to support sphinx 6.x.x
+
 
 
 # configure locale
