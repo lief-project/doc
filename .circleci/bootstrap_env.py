@@ -9,6 +9,7 @@ import tarfile
 import subprocess
 import pathlib
 import tempfile
+import sysconfig
 from contextlib import closing
 
 LOG_LEVEL = logging.INFO
@@ -17,10 +18,13 @@ logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 logging.getLogger().setLevel(LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
+PYTHON_VERSION           = sysconfig.get_config_var("VERSION")
 LIEF_TOKEN               = os.getenv("LIEF_CIRCLE_TOKEN", None)
 LIEF_WORKFLOW_NAME       = "Linux x86-64"
 LIEF_SDK_ARTIFACT_NAME   = "linux-x86-64-sdk"
-LIEF_WHEEL_ARTIFACT_NAME = "linux-x86-64-python-wheel"
+LIEF_WHEEL_ARTIFACT_NAME = f"linux-x86-64-python{PYTHON_VERSION}-wheel"
+BASE_URL                 = "https://api.github.com/repos/lief-project/lief"
+BRANCH                   = os.getenv("LIEF_BRANCH", "master")
 # As defined in <github>:.github/workflows/linux-x86-64.yml
 
 if LIEF_TOKEN is None or len(LIEF_TOKEN) == 0:
@@ -46,7 +50,7 @@ def run_pip_install(file):
 
 
 def list_workflow():
-    url = "https://api.github.com/repos/lief-project/lief/actions/runs"
+    url = f"{BASE_URL}/actions/runs"
     headers = {
         "Accept": "application/vnd.github.v3+json"
     }
@@ -56,26 +60,27 @@ def list_workflow():
         return None
     return r.json()
 
-def is_success_master(workflow):
-    return workflow["head_branch"] == "master" and workflow["conclusion"] == "success"
+def is_success(workflow, branch):
+    return workflow["head_branch"] == branch and \
+            workflow["conclusion"] == "success"
 
 def workflow_date(workflow):
     return workflow["updated_at"]
 
-def master_workflow():
+def get_workflow(branch: str):
     workflow = list_workflow()
     if workflow is None:
         return []
 
-    flows = [wf for wf in workflow["workflow_runs"] if is_success_master(wf)]
+    flows = [wf for wf in workflow["workflow_runs"] if is_success(wf, branch)]
     flows.sort(key=workflow_date, reverse=True)
     return flows
-
 
 def get_artifacts(url):
     headers = {
         "Accept": "application/vnd.github.v3+json"
     }
+    logger.info("Getting artifact at: %s", url)
     r = requests.get(url, headers=headers)
     if r.status_code != 200:
         logger.error("Error while trying to list workflow's actions: %s", r.text)
@@ -133,31 +138,40 @@ def process_wheels(name, size, url):
 
 
 def process_artifacts(artifacts):
+    wheel_found = False
+    sdk_found = False
     for element in filter(not_expired, artifacts["artifacts"]):
         name = element["name"]
         size = element["size_in_bytes"]
         url  = element["archive_download_url"]
         logger.info("%-30s (%s): %s", name, sizeof_fmt(size), url)
         if name == LIEF_WHEEL_ARTIFACT_NAME:
+            wheel_found = True
             if process_wheels(name, size, url):
                 logger.info("LIEF Python wheel installed")
             else:
                 logger.error("Error while installing the Python wheel")
                 sys.exit(1)
-
         elif name == LIEF_SDK_ARTIFACT_NAME:
             cwd = pathlib.Path(".").resolve().absolute()
+            sdk_found = True
             if process_sdk(name, size, url, cwd.as_posix()):
                 logger.info("LIEF SDK extracted")
             else:
                 logger.error("Error while extracting the SDK")
                 sys.exit(1)
-        else:
-            logger.error("Unknown artifact: %s", name)
-            sys.exit(1)
+
+    if not wheel_found:
+        logger.error("Can't find wheel artifact: %s", LIEF_WHEEL_ARTIFACT_NAME)
+
+    if not sdk_found:
+        logger.error("Can't find SDK artifact: %s", LIEF_SDK_ARTIFACT_NAME)
+
+    if not wheel_found or not sdk_found:
+        sys.exit(1)
 
 def bootstrap(try_count: int = 3):
-    for wf in master_workflow():
+    for wf in get_workflow(BRANCH):
         name    = wf["name"]
         art_url = wf["artifacts_url"]
         logger.info("%-30s: %s", name, art_url)

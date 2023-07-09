@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: liefproject/doc:sphinx_lief_theme_4
+      - image: liefproject/doc:sphinx_lief_theme
     environment:
       LIEF_VERSION: 0.14.0
       LIEF_INPUT: "/root/project/LIEF-0.14.0-Linux-x86_64/include/LIEF /root/project/LIEF-master/doc/doxygen"
