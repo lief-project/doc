@@ -1,13 +1,23 @@
-version: 2
+version: 2.1
+
+parameters:
+  lief-version:
+    type: string
+    default: "0.14.0"
+  lief-branch:
+    type: string
+    default: "master"
+
 jobs:
   build:
     docker:
       - image: liefproject/doc:sphinx_lief_theme
     environment:
-      LIEF_VERSION: 0.14.0
-      LIEF_INPUT: "/root/project/LIEF-0.14.0-Linux-x86_64/include/LIEF /root/project/LIEF-master/doc/doxygen"
-      LIEF_EXCLUDE: "/root/project/LIEF-0.14.0-Linux-x86_64/include/LIEF/third-party"
-      LIEF_INCLUDE_PATH: "/root/project/LIEF-0.14.0-Linux-x86_64/include"
+      LIEF_BRANCH: << pipeline.parameters.lief-branch >>
+      LIEF_VERSION: << pipeline.parameters.lief-version >>
+      LIEF_INPUT: "/root/project/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include/LIEF /root/project/LIEF-<< pipeline.parameters.lief-branch >>/doc/doxygen"
+      LIEF_EXCLUDE: "/root/project/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include/LIEF/third-party"
+      LIEF_INCLUDE_PATH: "/root/project/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include"
       LIEF_DOXYGEN_XML: "/root/project/doxygen/xml"
       LIEF_DOXYGEN_WARN_FILE: "/tmp/doxygen-warn.log"
     working_directory: /root/project
@@ -23,21 +33,23 @@ jobs:
       - run:
           name: Get LIEF Sources
           command: |
-            curl -LO https://github.com/lief-project/LIEF/archive/master.tar.gz
-            tar -xvf master.tar.gz
+            curl -L https://github.com/lief-project/LIEF/archive/refs/heads/${LIEF_BRANCH}.tar.gz --output src.tar.gz
+            mkdir -p LIEF-doc-src && cd LIEF-doc-src
+            tar xzvf ../src.tar.gz --strip-components=1
+            cd ..
       - run:
           name: Generate doxygen documentation
           command: |
-            doxygen LIEF-master/doc/doxygen/Doxyfile
+            doxygen LIEF-doc-src/doc/doxygen/Doxyfile
       - run:
           name: Generate Sphinx documentation
           command: |
-            cd LIEF-master/doc
+            cd LIEF-doc-src/doc
             sphinx-build -a -E -j8 -w /tmp/sphinx-warn.log ./sphinx ./sphinx-doc
       - run:
           name: Copy doc tree
           command: |
-            cp -r ${CIRCLE_WORKING_DIRECTORY}/LIEF-master/doc/sphinx-doc ${CIRCLE_WORKING_DIRECTORY}/workspace/doc
+            cp -r ${CIRCLE_WORKING_DIRECTORY}/LIEF-doc-src/doc/sphinx-doc ${CIRCLE_WORKING_DIRECTORY}/workspace/doc
             cp -r ${CIRCLE_WORKING_DIRECTORY}/doxygen/html ${CIRCLE_WORKING_DIRECTORY}/workspace/doc/doxygen
       - persist_to_workspace:
           root: workspace
@@ -53,6 +65,9 @@ jobs:
   deploy:
     docker:
       - image: liefproject/doc-deploy:latest
+    environment:
+      LIEF_BRANCH: << pipeline.parameters.lief-branch >>
+      LIEF_VERSION: << pipeline.parameters.lief-version >>
     working_directory: /root/project
     steps:
       - checkout

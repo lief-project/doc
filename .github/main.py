@@ -22,6 +22,7 @@ DEPLOY_IV  = os.getenv("LIEF_AUTOMATIC_BUILDS_IV", None)
 GIT_USER  = "lief-ci-doc"
 GIT_EMAIL = "lief@quarkslab.com"
 
+LIEF_SRC_BRANCH       = os.getenv("LIEF_BRANCH", "master")
 LIEF_WEBSITE_REPO     = "https://github.com/lief-project/lief-project.github.io.git"
 LIEF_WEBSITE_DIR      = REPODIR / "lief-project.github.io"
 LIEF_WEBSITE_SSH_REPO = "git@github.com:lief-project/lief-project.github.io.git"
@@ -48,6 +49,10 @@ if DEPLOY_IV is None:
     sys.exit(1)
 
 def setup_lief_website(branch="master"):
+    target_dir = "latest"
+    if LIEF_SRC_BRANCH != "master" and len(LIEF_SRC_BRANCH) > 0:
+        target_dir = LIEF_SRC_BRANCH.replace("/", "-").replace("_", "-")
+    print(f"Target dir: {target_dir}")
     # 1. Clone the repo
     p = subprocess.Popen(f"{GIT} clone --branch=master -j8 --single-branch {LIEF_WEBSITE_REPO}",
             shell=True, cwd=REPODIR)
@@ -72,13 +77,14 @@ def setup_lief_website(branch="master"):
             sys.exit(1)
 
     cmds = [
+        f"mkdir -p {LIEF_WEBSITE_DIR}/doc/{target_dir}",
         # Remove old doc
-        f"{RM} -rf  {LIEF_WEBSITE_DIR}/doc/latest/*",
+        f"{RM} -rf  {LIEF_WEBSITE_DIR}/doc/{target_dir}/*",
         # Copy sphinx & doxygen
-        f"{MV} --force {CI_CWD}/doc/* {LIEF_WEBSITE_DIR}/doc/latest/",
+        f"{MV} --force {CI_CWD}/doc/* {LIEF_WEBSITE_DIR}/doc/{target_dir}/",
         # Commit
         f"{GIT} add .",
-        f"{GIT} commit -m 'Update latest doc'"
+        f"{GIT} commit -m 'Update {target_dir} doc'"
     ]
 
     for cmd in cmds:

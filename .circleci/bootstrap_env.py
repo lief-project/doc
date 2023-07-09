@@ -171,6 +171,7 @@ def process_artifacts(artifacts):
         sys.exit(1)
 
 def bootstrap(try_count: int = 3):
+    logger.info("Using branch: %s", BRANCH)
     for wf in get_workflow(BRANCH):
         name    = wf["name"]
         art_url = wf["artifacts_url"]
