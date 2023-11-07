@@ -11,16 +11,16 @@ parameters:
 jobs:
   build:
     docker:
-      - image: liefproject/doc:sphinx_lief_theme
+      - image: liefproject/doc
     environment:
       LIEF_BRANCH: << pipeline.parameters.lief-branch >>
       LIEF_VERSION: << pipeline.parameters.lief-version >>
-      LIEF_INPUT: "/root/project/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include/LIEF /root/project/LIEF-<< pipeline.parameters.lief-branch >>/doc/doxygen"
-      LIEF_EXCLUDE: "/root/project/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include/LIEF/third-party"
-      LIEF_INCLUDE_PATH: "/root/project/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include"
-      LIEF_DOXYGEN_XML: "/root/project/doxygen/xml"
+      LIEF_INPUT: "/home/lief-doc/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include/LIEF /home/lief-doc/LIEF-<< pipeline.parameters.lief-branch >>/doc/doxygen"
+      LIEF_EXCLUDE: "/home/lief-doc/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include/LIEF/third-party"
+      LIEF_INCLUDE_PATH: "/home/lief-doc/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include"
+      LIEF_DOXYGEN_XML: "/home/lief-doc/doxygen/xml"
       LIEF_DOXYGEN_WARN_FILE: "/tmp/doxygen-warn.log"
-    working_directory: /root/project
+    working_directory: /home/lief-doc
     steps:
       - run: mkdir -p workspace
       - run:
@@ -45,7 +45,7 @@ jobs:
           name: Generate Sphinx documentation
           command: |
             cd LIEF-doc-src/doc
-            sphinx-build -a -E -j8 -w /tmp/sphinx-warn.log ./sphinx ./sphinx-doc
+            python3 -m sphinx build -a -E -j8 -w /tmp/sphinx-warn.log ./sphinx ./sphinx-doc
       - run:
           name: Copy doc tree
           command: |
@@ -68,7 +68,7 @@ jobs:
     environment:
       LIEF_BRANCH: << pipeline.parameters.lief-branch >>
       LIEF_VERSION: << pipeline.parameters.lief-version >>
-    working_directory: /root/project
+    working_directory: /home/lief-doc
     steps:
       - checkout
       - attach_workspace:
