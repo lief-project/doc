@@ -41,7 +41,7 @@ def sizeof_fmt(num, suffix="B"):
 def run_pip_install(file):
     cmd = [
         sys.executable,
-        "-m", "pip", "install", "--no-cache-dir",
+        "-m", "pip", "install", "--break-system-packages", "--no-cache-dir",
         "--force-reinstall",
         file
     ]
