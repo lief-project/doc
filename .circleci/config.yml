@@ -15,12 +15,12 @@ jobs:
     environment:
       LIEF_BRANCH: << pipeline.parameters.lief-branch >>
       LIEF_VERSION: << pipeline.parameters.lief-version >>
-      LIEF_INPUT: "/home/lief-doc/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include/LIEF /home/lief-doc/LIEF-<< pipeline.parameters.lief-branch >>/doc/doxygen"
-      LIEF_EXCLUDE: "/home/lief-doc/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include/LIEF/third-party"
-      LIEF_INCLUDE_PATH: "/home/lief-doc/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include"
-      LIEF_DOXYGEN_XML: "/home/lief-doc/doxygen/xml"
+      LIEF_INPUT: "/home/lief-doc/project/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include/LIEF /home/lief-doc/project/LIEF-<< pipeline.parameters.lief-branch >>/doc/doxygen"
+      LIEF_EXCLUDE: "/home/lief-doc/project/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include/LIEF/third-party"
+      LIEF_INCLUDE_PATH: "/home/lief-doc/project/LIEF-<< pipeline.parameters.lief-version >>-Linux-x86_64/include"
+      LIEF_DOXYGEN_XML: "/home/lief-doc/project/doxygen/xml"
       LIEF_DOXYGEN_WARN_FILE: "/tmp/doxygen-warn.log"
-    working_directory: /home/lief-doc
+    working_directory: /home/lief-doc/project
     steps:
       - run: mkdir -p workspace
       - run:
@@ -64,18 +64,19 @@ jobs:
           destination: doxygen-warnings
   deploy:
     docker:
-      - image: liefproject/doc-deploy:latest
+      - image: liefproject/doc-deploy
     environment:
       LIEF_BRANCH: << pipeline.parameters.lief-branch >>
       LIEF_VERSION: << pipeline.parameters.lief-version >>
     working_directory: /home/lief-doc
     steps:
-      - checkout
+      - checkout:
+          path: /home/lief-doc/doc-git
       - attach_workspace:
           at: .
       - run:
           command: |
-            python3 .github/main.py
+            python3 /home/lief-doc/doc-git/.github/main.py
 
 workflows:
   version: 2

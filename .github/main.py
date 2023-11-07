@@ -20,7 +20,7 @@ DEPLOY_KEY = os.getenv("LIEF_AUTOMATIC_BUILDS_KEY", None)
 DEPLOY_IV  = os.getenv("LIEF_AUTOMATIC_BUILDS_IV", None)
 
 GIT_USER  = "lief-ci-doc"
-GIT_EMAIL = "lief@quarkslab.com"
+GIT_EMAIL = f"{GIT_USER}@lief.re"
 
 LIEF_SRC_BRANCH       = os.getenv("LIEF_BRANCH", "master")
 LIEF_WEBSITE_REPO     = "https://github.com/lief-project/lief-project.github.io.git"
@@ -119,13 +119,6 @@ def fix_ssh_perms():
     if not SSH_DIR.is_dir():
         return
 
-    #cmd = f"chmod -c -R go-rwx {SSH_DIR}"
-
-    #p = subprocess.Popen(cmd)
-    #p.wait()
-
-    #if p.returncode:
-    #    sys.exit(1)
 def start_ssh_agent():
     process = subprocess.run('ssh-agent', stdout=subprocess.PIPE, universal_newlines=True)
     OUTPUT_PATTERN = re.compile(r'SSH_AUTH_SOCK=(?P<socket>[^;]+).*SSH_AGENT_PID=(?P<pid>\d+)', re.MULTILINE | re.DOTALL)
