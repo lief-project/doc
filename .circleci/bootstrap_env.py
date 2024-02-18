@@ -137,7 +137,7 @@ def process_wheels(name, size, url):
     return False
 
 
-def process_artifacts(artifacts):
+def process_artifacts(artifacts) -> bool:
     wheel_found = False
     sdk_found = False
     for element in filter(not_expired, artifacts["artifacts"]):
@@ -151,7 +151,7 @@ def process_artifacts(artifacts):
                 logger.info("LIEF Python wheel installed")
             else:
                 logger.error("Error while installing the Python wheel")
-                sys.exit(1)
+                return False
         elif name == LIEF_SDK_ARTIFACT_NAME:
             cwd = pathlib.Path(".").resolve().absolute()
             sdk_found = True
@@ -159,7 +159,7 @@ def process_artifacts(artifacts):
                 logger.info("LIEF SDK extracted")
             else:
                 logger.error("Error while extracting the SDK")
-                sys.exit(1)
+                return False
 
     if not wheel_found:
         logger.error("Can't find wheel artifact: %s", LIEF_WHEEL_ARTIFACT_NAME)
@@ -168,9 +168,10 @@ def process_artifacts(artifacts):
         logger.error("Can't find SDK artifact: %s", LIEF_SDK_ARTIFACT_NAME)
 
     if not wheel_found or not sdk_found:
-        sys.exit(1)
+        return False
+    return True
 
-def bootstrap(try_count: int = 3):
+def bootstrap(try_count: int = 4):
     logger.info("Using branch: %s", BRANCH)
     for wf in get_workflow(BRANCH):
         name    = wf["name"]
@@ -178,19 +179,22 @@ def bootstrap(try_count: int = 3):
         logger.info("%-30s: %s", name, art_url)
         if name == LIEF_WORKFLOW_NAME:
             ar = get_artifacts(art_url)
-            process_artifacts(ar)
-            sys.exit(0)
+            if not process_artifacts(ar):
+                logger.error("Error while trying to process the artifacts")
+                if try_count > 0:
+                    time.sleep(6)
+                    return bootstrap(try_count - 1)
+                return 1
 
+            return 0
     if try_count > 0:
         logger.error("Workflow '%s' not found. Try again %d times after 2s", LIEF_WORKFLOW_NAME, try_count)
         time.sleep(2)
-        bootstrap(try_count - 1)
-    else:
-        logger.error("did not find workflow %s", LIEF_WORKFLOW_NAME)
-        sys.exit(1)
+        return bootstrap(try_count - 1)
+    logger.error("did not find workflow %s", LIEF_WORKFLOW_NAME)
+    return 1
 
 
 if __name__ == "__main__":
     logger.info("Bootstraping LIEF ...")
-    bootstrap()
-    sys.exit(0)
+    sys.exit(bootstrap())
