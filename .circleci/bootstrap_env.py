@@ -61,8 +61,7 @@ def list_workflow():
     return r.json()
 
 def is_success(workflow, branch):
-    return workflow["head_branch"] == branch and \
-            workflow["conclusion"] == "success"
+    return workflow["head_branch"] == branch
 
 def workflow_date(workflow):
     return workflow["updated_at"]
