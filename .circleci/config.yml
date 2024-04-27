@@ -6,7 +6,7 @@ parameters:
     default: "0.15.0"
   lief-branch:
     type: string
-    default: "master"
+    default: "main"
 
 jobs:
   build:

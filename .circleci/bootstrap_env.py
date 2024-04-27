@@ -24,7 +24,7 @@ LIEF_WORKFLOW_NAME       = "Linux x86-64"
 LIEF_SDK_ARTIFACT_NAME   = "linux-x86-64-sdk"
 LIEF_WHEEL_ARTIFACT_NAME = f"linux-x86-64-python{PYTHON_VERSION}-wheel"
 BASE_URL                 = "https://api.github.com/repos/lief-project/lief"
-BRANCH                   = os.getenv("LIEF_BRANCH", "master")
+BRANCH                   = os.getenv("LIEF_BRANCH", "main")
 # As defined in <github>:.github/workflows/linux-x86-64.yml
 
 if LIEF_TOKEN is None or len(LIEF_TOKEN) == 0:
@@ -54,7 +54,7 @@ def list_workflow():
     headers = {
         "Accept": "application/vnd.github.v3+json"
     }
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, headers=headers, timeout=3)
     if r.status_code != 200:
         logger.error("Error while trying to list workflow's actions: %s", r.text)
         return None
@@ -80,7 +80,7 @@ def get_artifacts(url):
         "Accept": "application/vnd.github.v3+json"
     }
     logger.info("Getting artifact at: %s", url)
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, headers=headers, timeout=3)
     if r.status_code != 200:
         logger.error("Error while trying to list workflow's actions: %s", r.text)
         return None
@@ -89,13 +89,12 @@ def get_artifacts(url):
 def not_expired(element) -> bool:
     return not element["expired"]
 
-
 def process_sdk(name, size, url, output_dir):
     logger.info("Downloading LIEF SDK at '%s'", url)
     headers = {
         "Authorization": f"token {LIEF_TOKEN}"
     }
-    r = requests.get(url, stream=True, headers=headers)
+    r = requests.get(url, stream=True, headers=headers, timeout=3)
     if r.status_code != 200:
         logger.error(r.text)
         sys.exit(1)
@@ -117,7 +116,7 @@ def process_wheels(name, size, url):
     headers = {
         "Authorization": f"token {LIEF_TOKEN}"
     }
-    r = requests.get(url, stream=True, headers=headers)
+    r = requests.get(url, stream=True, headers=headers, timeout=3)
     if r.status_code != 200:
         logger.error(r.text)
         sys.exit(1)
