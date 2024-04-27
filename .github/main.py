@@ -22,7 +22,7 @@ DEPLOY_IV  = os.getenv("LIEF_AUTOMATIC_BUILDS_IV", None)
 GIT_USER  = "lief-ci-doc"
 GIT_EMAIL = f"{GIT_USER}@lief.re"
 
-LIEF_SRC_BRANCH       = os.getenv("LIEF_BRANCH", "master")
+LIEF_SRC_BRANCH       = os.getenv("LIEF_BRANCH", "main")
 LIEF_WEBSITE_REPO     = "https://github.com/lief-project/lief-project.github.io.git"
 LIEF_WEBSITE_DIR      = REPODIR / "lief-project.github.io"
 LIEF_WEBSITE_SSH_REPO = "git@github.com:lief-project/lief-project.github.io.git"
@@ -48,9 +48,9 @@ if DEPLOY_IV is None:
     print("Deploy IV is not set!", file=sys.stderr)
     sys.exit(1)
 
-def setup_lief_website(branch="master"):
+def setup_lief_website(branch="main"):
     target_dir = "latest"
-    if LIEF_SRC_BRANCH != "master" and len(LIEF_SRC_BRANCH) > 0:
+    if LIEF_SRC_BRANCH != "main" and len(LIEF_SRC_BRANCH) > 0:
         target_dir = LIEF_SRC_BRANCH.replace("/", "-").replace("_", "-")
     print(f"Target dir: {target_dir}")
     # 1. Clone the repo
