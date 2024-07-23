@@ -3,7 +3,7 @@ version: 2.1
 parameters:
   lief-version:
     type: string
-    default: "0.15.0"
+    default: "0.16.0"
   lief-branch:
     type: string
     default: "main"
