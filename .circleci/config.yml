@@ -12,6 +12,7 @@ jobs:
   build:
     docker:
       - image: liefproject/doc
+    resource_class: large
     environment:
       LIEF_BRANCH: << pipeline.parameters.lief-branch >>
       LIEF_VERSION: << pipeline.parameters.lief-version >>
